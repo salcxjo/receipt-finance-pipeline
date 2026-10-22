@@ -18,7 +18,7 @@ from PIL import Image
 from src.common.schemas import ParsedLineItem, ParsedReceipt
 
 _LINE_ITEM_RE = re.compile(
-    r"^(?P<description>.+?)\s+(?P<qty>\d+)?\s*[xX@]?\s*\$?(?P<price>\d+\.\d{2})$"
+    r"^(?P<description>.+?)\s+(?:(?P<qty>\d+)\s*[xX@]\s*)?\$?(?P<price>\d+\.\d{2})$"
 )
 _TOTAL_RE = re.compile(r"(?i)\btotal\b.*?\$?(\d+\.\d{2})")
 _TAX_RE = re.compile(r"(?i)\btax\b.*?\$?(\d+\.\d{2})")

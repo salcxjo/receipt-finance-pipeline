@@ -9,7 +9,11 @@ SUBTOTAL               $10.92
 TAX                      $0.55
 TOTAL                   $11.47
 """
+def test_price_digits_are_not_mistaken_for_quantity() -> None:
+    result = parse_receipt_text("APPLE GALA SLB HRJ 10.00")
 
+    assert result.line_items[0].quantity == 1
+    assert result.line_items[0].line_total == 10.0
 
 def test_parses_line_items() -> None:
     result = parse_receipt_text(SAMPLE_RECEIPT_TEXT)

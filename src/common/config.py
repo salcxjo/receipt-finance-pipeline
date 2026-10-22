@@ -17,8 +17,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     llm_model: str = "claude-sonnet-4-6"
 
-    mqtt_broker_host: str = "localhost"
-    mqtt_broker_port: int = 1883
+    # Shared secret the phone sends in the X-API-Key header. No default on
+    # purpose: uploads stay disabled until UPLOAD_API_KEY is set.
+    upload_api_key: str | None = None
+    max_upload_mb: int = 15
 
     receipt_image_dir: str = "data/raw"
     log_level: str = "INFO"

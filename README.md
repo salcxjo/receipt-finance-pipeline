@@ -1,8 +1,8 @@
 # Receipt & Personal Finance Pipeline
 
-An end-to-end personal-finance data platform: camera/upload receipt capture →
-OCR + ML parsing → PostgreSQL → desktop GUI + REST API + LLM natural-language
-query layer, with an edge deployment on a Raspberry Pi 4 "scanning station."
+An end-to-end personal-finance data platform: receipt photos from an Android
+phone → OCR + ML parsing → PostgreSQL → desktop GUI + REST API + LLM
+natural-language query layer.
 
 See [`docs/SRS.md`](docs/SRS.md) for full requirements and
 [`docs/adr/`](docs/adr) for architecture decisions.
@@ -14,14 +14,12 @@ db/                    SQLAlchemy models + Alembic migrations
 src/ingestion/          validates and writes incoming receipt data
 src/ml/training/        offline training pipeline (OCR post-processing model, classifier)
 src/ml/inference/       shared inference code, used by both edge and API
-src/edge/                Pi 4 capture + on-device inference service
 src/api/                 FastAPI REST API
 src/gui/                 PySide6 desktop app
 src/llm/                 text-to-SQL natural-language query layer
 src/common/              shared config, logging, schemas (pydantic)
 tests/unit/              fast, no external dependencies
 tests/integration/       hits a real (test) Postgres instance
-tests/hardware/          smoke tests run on the Pi 4 itself, not in CI
 scripts/                 one-off/dev scripts (seed data, model export, etc.)
 data/                    raw/processed/models — gitignored except .gitkeep
 ```
@@ -45,6 +43,17 @@ pytest tests/unit tests/integration
 # run the API
 uvicorn src.api.main:app --reload
 ```
+
+## Uploading receipts from your phone
+
+1. Set `UPLOAD_API_KEY` in `.env` (see `.env.example` for how to generate one).
+2. Run the API so other devices can reach it: `uvicorn src.api.main:app --host 0.0.0.0 --port 8000`
+3. Put the phone and the server on the same private network. Easiest: install
+   Tailscale on both (works from anywhere), or use the same Wi-Fi and allow
+   port 8000 through the firewall.
+4. On the phone open `http://<server-ip-or-tailscale-name>:8000/upload`, enter the
+   API key once, and tap "Take photo". Use Chrome's "Add to Home screen" for a
+   one-tap shortcut. Never expose this port to the public internet.
 
 ## Development workflow
 
